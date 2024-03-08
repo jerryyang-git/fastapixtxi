@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from typing import List
+
 from . import models, schemas
 
 
@@ -14,7 +14,7 @@ from . import models, schemas
 def upsert_article(db: Session, article_data: schemas.ArticleCreate):
     # 尝试根据ID查找文章
     db_article = db.query(models.Article).filter(models.Article.id == article_data.id).first()
-    
+
     if db_article:
         # 如果文章存在，更新显式设置的字段
         update_data = article_data.dict(exclude_unset=True)
@@ -25,20 +25,28 @@ def upsert_article(db: Session, article_data: schemas.ArticleCreate):
     else:
         # 如果文章不存在，创建新的文章
         article_dict = article_data.dict(exclude_unset=True)  # 将 article_data 转换为字典
+
         db_article = models.Article(**article_dict)  # 使用字典创建 Article 实例
-        db.add(db_article)
+
+        tags = article_dict.pop('tags', {})
+        db_tags = [models.Tag(**tag) for tag in tags]
+
+        db.add_all([db_article, *db_tags])
         db.commit()
         db.refresh(db_article)
-    
+
     return db_article
 
 
 # 获取所有文章
-def get_articles(db: Session, iaxy:schemas.allArticle):
+def get_articles(db: Session, iaxy: schemas.allArticle):
     return db.query(models.Article).offset(iaxy.skip).limit(iaxy.limit).all()
+
+
 # 获取文章
 def get_article(db: Session, article_id: int):
     return db.query(models.Article).filter(models.Article.id == article_id).first()
+
 
 # CRUD operations for Title
 def create_title(db: Session, title: schemas.TitleCreate):
@@ -48,6 +56,7 @@ def create_title(db: Session, title: schemas.TitleCreate):
     db.refresh(db_title)
     return db_title
 
+
 # CRUD operations for Tag
 def create_tag(db: Session, tag: schemas.TagCreate):
     db_tag = models.Tag(**tag.dict())
@@ -56,8 +65,10 @@ def create_tag(db: Session, tag: schemas.TagCreate):
     db.refresh(db_tag)
     return db_tag
 
+
 def get_tag(db: Session, tag_id: int):
     return db.query(models.Tag).filter(models.Tag.id == tag_id).first()
+
 
 # CRUD operations for Developer
 def create_developer(db: Session, developer: schemas.DeveloperCreate):
@@ -67,8 +78,10 @@ def create_developer(db: Session, developer: schemas.DeveloperCreate):
     db.refresh(db_developer)
     return db_developer
 
+
 def get_developer(db: Session, developer_id: int):
     return db.query(models.Developer).filter(models.Developer.id == developer_id).first()
+
 
 # CRUD operations for FileDlink
 def create_file_dlink(db: Session, file_dlink: schemas.FileDlinkCreate, article_id: int):
@@ -77,6 +90,7 @@ def create_file_dlink(db: Session, file_dlink: schemas.FileDlinkCreate, article_
     db.commit()
     db.refresh(db_file_dlink)
     return db_file_dlink
+
 
 def get_file_dlink(db: Session, file_dlink_id: int):
     return db.query(models.FileDlink).filter(models.FileDlink.id == file_dlink_id).first()
