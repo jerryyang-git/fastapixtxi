@@ -14,7 +14,7 @@ class Article(Base):
     alias = Column(String(1024), index=True)
     link = Column(String(5120))
 
-    titles = relationship("Title", back_populates="article")
+    title = relationship("Title", back_populates="article")
     filesdlink = relationship("FileDlink", back_populates="article")
     tags = relationship("Tag", secondary='article_tag_association', back_populates="articles")
     developers = relationship("Developer", secondary="article_developer_association", back_populates="articles")
@@ -30,7 +30,7 @@ class Title(Base):
     official = Column(Boolean)
     title = Column(String(2048), index=True)
 
-    article = relationship("Article", back_populates="titles")
+    article = relationship("Article", back_populates="title")
 
 
 # 标签表
