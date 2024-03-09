@@ -18,7 +18,7 @@ class Tag(TagBase):
     articles: List["Article"] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 # Developer Schema
@@ -37,7 +37,7 @@ class Developer(DeveloperBase):
     articles: List["Article"] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 # FileDlink Schema
@@ -51,12 +51,16 @@ class FileDlinkCreate(FileDlinkBase):
     pass
 
 
+class FileDlinkUp(FileDlinkCreate):
+    article_id: int
+
+
 class FileDlink(FileDlinkBase):
     id: int
     article_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 # Title Schema
@@ -70,12 +74,16 @@ class TitleCreate(TitleBase):
     pass
 
 
+class TitleCreateBinding(TitleBase):
+    article_title_id: int
+
+
 class Title(TitleBase):
     id: int
     article_title_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 # Article Schema
@@ -101,10 +109,23 @@ class Article(ArticleBase):
     filesdlink: List[FileDlink] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 # 数据库之外模型
 class ObtainAllArticles(BaseModel):
     skip: int
     limit: int = 10
+
+
+class RemoveTag(BaseModel):
+    article_id: int
+    label_id: int
+
+
+class Search(BaseModel):
+    q: str
+
+
+class Vdid(BaseModel):
+    id: int
