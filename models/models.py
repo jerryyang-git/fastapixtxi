@@ -25,7 +25,7 @@ class Title(Base):
     __tablename__ = "title"
 
     id = Column(Integer, unique=True, primary_key=True)
-    article_id = Column(Integer, ForeignKey('article.id'))
+    article_title_id = Column(Integer, ForeignKey('article.id'))
     olang = Column(String(255))
     official = Column(Boolean)
     title = Column(String(2048), index=True)

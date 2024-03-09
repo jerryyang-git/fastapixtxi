@@ -31,7 +31,7 @@ def get_article(id: int, db: Session = Depends(get_db)):
 
 # 获取所有文章的路由
 @app.post("/api/plat", response_model=List[schemas.Article])
-def read_articles(iaxy: schemas.allArticle, db: Session = Depends(get_db)):
+def read_articles(iaxy: schemas.ObtainAllArticles, db: Session = Depends(get_db)):
     articles = crud.get_articles(db, iaxy)
     return articles
 
@@ -48,6 +48,7 @@ def create_title(title: schemas.TitleCreate, db: Session = Depends(get_db)):
     return crud.create_title(db, title)
 
 
+# 创建Tag标签
 @app.post("/api/tag", response_model=schemas.Tag)
 def create_tag(tag: schemas.TagCreate, db: Session = Depends(get_db)):
     return crud.create_tag(db, tag)

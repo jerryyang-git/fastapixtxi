@@ -72,7 +72,7 @@ class TitleCreate(TitleBase):
 
 class Title(TitleBase):
     id: int
-    article_id: int
+    article_title_id: int
 
     class Config:
         orm_mode = True
@@ -81,30 +81,30 @@ class Title(TitleBase):
 # Article Schema
 class ArticleBase(BaseModel):
     content: str
-    images: str
+    images: str = None
     alias: Optional[str] = None
     link: Optional[str] = None
 
 
 class ArticleCreate(ArticleBase):
+    title: List[TitleCreate]
     tags: List[TagCreate] = None
     developers: List[DeveloperCreate] = None
     filesdlink: List[FileDlinkCreate] = None
-    title: List[TitleCreate] = None
 
 
 class Article(ArticleBase):
     id: int
-    filesdlink: List[FileDlink] = []
-    tags: List[TagBase] = []
-    developers: List[DeveloperBase] = []
     title: List[Title] = []
+    developers: List[DeveloperBase] = []
+    tags: List[TagBase] = []
+    filesdlink: List[FileDlink] = []
 
     class Config:
         orm_mode = True
 
 
 # 数据库之外模型
-class allArticle(BaseModel):
+class ObtainAllArticles(BaseModel):
     skip: int
     limit: int = 10

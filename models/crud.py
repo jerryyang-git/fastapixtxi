@@ -11,22 +11,18 @@ from . import models, schemas
 #     db.refresh(db_article)
 #     return db_article
 
-# 创建新的文章or绑定标签
 
-
+# 创建新的文章 & 绑定标签 & FilesLink
 def create_article(db: Session, article_data: schemas.ArticleCreate):
     article_dict = article_data.dict(exclude_unset=True)
-    # 处理标签
+
+    # 提取文件链接和标题数据，处理标签
+    filelink_data = article_dict.pop("filesdlink", [])
+    title_data = article_dict.pop("title", [])
     tags_data = article_dict.pop("tags", [])
     developers_data = article_dict.pop("developers", [])
-
-    # 提取文件链接和标题数据
-    filelink_data = article_dict.pop("filesdlink", [])
-    print(filelink_data)
-    title_data = article_dict.pop("title", [])
-    print(title_data)
-
-    db_article = models.Article(**article_dict)  # 使用字典创建 Article 实例
+    # 使用字典创建 Article 实例
+    db_article = models.Article(**article_dict)
     # 创建并关联标签
     db_tags = []
     for tag_data in tags_data:
@@ -70,8 +66,8 @@ def create_article(db: Session, article_data: schemas.ArticleCreate):
 
     db_article.tags.extend(db_tags)
     db_article.developers.extend(db_developers)
-    db_article.titles.extend(db_titles)
     db_article.filesdlink.extend(db_filelinks)
+    db_article.titles.extend(db_titles)
 
     db.commit()
     db.refresh(db_article)
@@ -79,8 +75,8 @@ def create_article(db: Session, article_data: schemas.ArticleCreate):
     return db_article
 
 
-# 获取所有文章（按页）
-def get_articles(db: Session, iaxy: schemas.allArticle):
+# 获取所有文章（按页&条）
+def get_articles(db: Session, iaxy: schemas.ObtainAllArticles):
     return db.query(models.Article).offset(iaxy.skip).limit(iaxy.limit).all()
 
 
